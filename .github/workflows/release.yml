@@ -24,19 +24,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Build macOS Sender
+      - name: Build macOS Sender (GUI)
         run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Sender --add-data "sender/config.py:." sender/sender.py
+          pyinstaller --onefile --windowed --name OpenSecondDisplay-Sender-GUI --add-data "sender/config.py:." --add-data "sender/sender.py:." sender/gui.py
           mkdir -p dist/sender_dmg
-          mv dist/OpenSecondDisplay-Sender dist/sender_dmg/
-          hdiutil create -volname "OpenSecondDisplay Sender" -srcfolder dist/sender_dmg -ov -format UDZO dist/OpenSecondDisplay-Sender.dmg
-
-      - name: Build macOS Receiver
-        run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
-          mkdir -p dist/receiver_dmg
-          mv dist/OpenSecondDisplay-Receiver dist/receiver_dmg/
-          hdiutil create -volname "OpenSecondDisplay Receiver" -srcfolder dist/receiver_dmg -ov -format UDZO dist/OpenSecondDisplay-Receiver.dmg
+          mv dist/OpenSecondDisplay-Sender-GUI.app dist/sender_dmg/
+          hdiutil create -volname "OpenSecondDisplay Sender" -srcfolder dist/sender_dmg -ov -format UDZO dist/OpenSecondDisplay-Sender-GUI.dmg
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -56,32 +49,33 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get install -y python3-tk
           pip install -r requirements.txt
 
-      - name: Build Linux Receiver
+      - name: Build Linux Receiver (GUI)
         run: |
           # Build binary
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
+          pyinstaller --onefile --windowed --name OpenSecondDisplay-Receiver-GUI --add-data "receiver/config.py:." --add-data "receiver/receiver.py:." receiver/gui.py
           
           # Prepare Debian Package Structure
           mkdir -p dist/openseconddisplay/DEBIAN
           mkdir -p dist/openseconddisplay/usr/local/bin
           
           # Move binary to path
-          mv dist/OpenSecondDisplay-Receiver dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
+          mv dist/OpenSecondDisplay-Receiver-GUI dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
           chmod +x dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
           
           # Create Control File
           echo "Package: openseconddisplay-receiver" > dist/openseconddisplay/DEBIAN/control
-          echo "Version: 1.0.0" >> dist/openseconddisplay/DEBIAN/control
+          echo "Version: 1.1.0" >> dist/openseconddisplay/DEBIAN/control
           echo "Section: utils" >> dist/openseconddisplay/DEBIAN/control
           echo "Priority: optional" >> dist/openseconddisplay/DEBIAN/control
           echo "Architecture: amd64" >> dist/openseconddisplay/DEBIAN/control
           echo "Maintainer: OpenSecondDisplay <maintainer@example.com>" >> dist/openseconddisplay/DEBIAN/control
-          echo "Description: OpenSecondDisplay Receiver for Linux" >> dist/openseconddisplay/DEBIAN/control
+          echo "Description: OpenSecondDisplay Receiver GUI for Linux" >> dist/openseconddisplay/DEBIAN/control
           
           # Build .deb
-          dpkg-deb --build dist/openseconddisplay dist/openseconddisplay-receiver_1.0.0_amd64.deb
+          dpkg-deb --build dist/openseconddisplay dist/openseconddisplay-receiver_1.1.0_amd64.deb
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -103,10 +97,10 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Build Windows Receiver
+      - name: Build Windows Receiver (GUI)
         run: |
           # Use ; for path separator on Windows
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver-Windows --add-data "receiver/config.py;." receiver/receiver.py
+          pyinstaller --onefile --windowed --name OpenSecondDisplay-Receiver-GUI --add-data "receiver/config.py;." --add-data "receiver/receiver.py;." receiver/gui.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
