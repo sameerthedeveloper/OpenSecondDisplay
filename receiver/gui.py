@@ -14,8 +14,21 @@ import sys
 import os
 import config
 
+import socket
+
 # Global state
 running_process = None
+
+def get_ip():
+    try:
+        # Connect to an external server (doesn't send data) to get the preferred interface IP
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
 
 def start_listening():
     global running_process
@@ -65,7 +78,10 @@ root.geometry("300x250")
 root.resizable(False, False)
 
 header = tk.Label(root, text="📺 Receiver", font=("Arial", 16, "bold"))
-header.pack(pady=10)
+header.pack(pady=(10, 5))
+
+ip_label = tk.Label(root, text=f"IP: {get_ip()}", font=("Arial", 12), fg="blue")
+ip_label.pack(pady=(0, 10))
 
 form_frame = tk.Frame(root)
 form_frame.pack(pady=10)
