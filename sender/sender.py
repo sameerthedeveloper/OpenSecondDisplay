@@ -81,7 +81,23 @@ def build_ffmpeg_command():
 
     return cmd
 
+# ... imports ...
+running_process = None
+
+def stop_stream_signal():
+    """External hook to stop the stream."""
+    global running_process
+    if running_process:
+        print("\n🛑 Stopping stream via signal...")
+        running_process.terminate()
+        try:
+            running_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            running_process.kill()
+        running_process = None
+
 def main():
+    global running_process
     print("🚀 OpenSecondDisplay - macOS Sender")
     check_ffmpeg()
 
@@ -98,7 +114,7 @@ def main():
 
     try:
         # Popen allows us to keep the script running and handle signals
-        process = subprocess.Popen(
+        running_process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE, 
             stderr=subprocess.PIPE, # Capture stderr to debug if needed, or let it flow to console
@@ -107,11 +123,11 @@ def main():
         
         # Stream FFmpeg output to console for feedback (optional, nice for debugging)
         # For a clean sender, maybe mostly silent, but for 'Engineer' role, logging is good.
-        while True:
+        while running_process:
             # Check if process is still alive
-            if process.poll() is not None:
+            if running_process.poll() is not None:
                 # Process exited
-                stderr_out = process.stderr.read()
+                stderr_out = running_process.stderr.read()
                 print("\n❌ FFmpeg exited unexpectedly.")
                 if "Connection refused" in stderr_out:
                     print("👉 Could not connect to Receiver. Is it running?")
@@ -121,12 +137,7 @@ def main():
             time.sleep(1)
 
     except KeyboardInterrupt:
-        print("\n🛑 Stopping stream...")
-        process.terminate()
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.kill()
+        stop_stream_signal()
         print("👋 Stream stopped.")
 
 if __name__ == "__main__":
