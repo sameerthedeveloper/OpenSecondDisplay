@@ -71,7 +71,7 @@ jobs:
           
           # Create Control File
           echo "Package: openseconddisplay-receiver" > dist/openseconddisplay/DEBIAN/control
-          echo "Version: 1.1.2" >> dist/openseconddisplay/DEBIAN/control
+          echo "Version: 1.1.3" >> dist/openseconddisplay/DEBIAN/control
           echo "Section: utils" >> dist/openseconddisplay/DEBIAN/control
           echo "Priority: optional" >> dist/openseconddisplay/DEBIAN/control
           echo "Architecture: amd64" >> dist/openseconddisplay/DEBIAN/control

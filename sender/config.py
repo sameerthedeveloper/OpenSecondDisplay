@@ -7,6 +7,7 @@ Role: macOS Sender Engineer
 # The IP address of the Linux Receiver
 RECEIVER_IP = "192.168.1.100"  # CHANGE THIS to your receiver's IP
 RECEIVER_PORT = 12345
+DISCOVERY_PORT = 5001
 
 # Video Configuration
 # Target resolution for scaling (width:height). 

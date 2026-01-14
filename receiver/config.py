@@ -7,6 +7,7 @@ Role: Linux Receiver Engineer
 # 0.0.0.0 listens on all available interfaces
 LISTEN_IP = "0.0.0.0"
 PORT = 12345
+DISCOVERY_PORT = 5001
 
 # Playback Configuration
 # "fullscreen" to occupy the entire monitor

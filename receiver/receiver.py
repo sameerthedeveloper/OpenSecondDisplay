@@ -18,6 +18,39 @@ import subprocess
 import sys
 import time
 import config
+import socket
+import threading
+
+def start_discovery_service():
+    """Starts a UDP listener to respond to discovery broadcasts."""
+    def listener():
+        udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_sock.bind(("0.0.0.0", config.DISCOVERY_PORT))
+        print(f"📡 Discovery Service listening on port {config.DISCOVERY_PORT}...")
+        
+        while True:
+            try:
+                data, addr = udp_sock.recvfrom(1024)
+                if data.decode().strip() == "OSD_DISCOVER":
+                    # Respond with Hostname and IP
+                    hostname = socket.gethostname()
+                    # Best attempt to get LAN IP
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    try:
+                        s.connect(("8.8.8.8", 80))
+                        ip = s.getsockname()[0]
+                    except:
+                        ip = "127.0.0.1"
+                    finally:
+                        s.close()
+                        
+                    response = f"OSD_ACK:{hostname}:{ip}"
+                    udp_sock.sendto(response.encode(), addr)
+            except Exception as e:
+                print(f"⚠️ Discovery Error: {e}")
+
+    t = threading.Thread(target=listener, daemon=True)
+    t.start()
 
 def check_ffplay():
     """Verifies that FFplay is installed."""
@@ -88,6 +121,7 @@ keep_running = True
 def main():
     global keep_running
     print("📺 OpenSecondDisplay - Linux Receiver")
+    start_discovery_service()
     check_ffplay()
     
     cmd = build_ffplay_command()

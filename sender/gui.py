@@ -14,6 +14,8 @@ import threading
 import sys
 import os
 import config
+import socket
+import time
 
 # Global process handle
 process = None
@@ -145,6 +147,63 @@ tk.Label(form_frame, text="Receiver IP:").grid(row=0, column=0, sticky="e", pady
 ip_entry = tk.Entry(form_frame)
 ip_entry.insert(0, config.RECEIVER_IP)
 ip_entry.grid(row=0, column=1, pady=5)
+
+def scan_receivers():
+    try:
+        status_label.config(text="Status: Scanning...", fg="orange")
+        root.update()
+        
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.settimeout(1.0)
+        
+        message = b"OSD_DISCOVER"
+        sock.sendto(message, ('255.255.255.255', config.DISCOVERY_PORT))
+        
+        found = []
+        start_time = time.time()
+        while time.time() - start_time < 1.0:
+            try:
+                data, addr = sock.recvfrom(1024)
+                text = data.decode()
+                if text.startswith("OSD_ACK:"):
+                    parts = text.split(":")
+                    if len(parts) >= 3:
+                        hostname = parts[1]
+                        ip = parts[2]
+                        found.append((hostname, ip))
+            except socket.timeout:
+                break
+            except:
+                pass
+                
+        sock.close()
+        
+        if not found:
+            messagebox.showinfo("Scan Result", "No receivers found.")
+            status_label.config(text="Status: Ready", fg="black")
+        elif len(found) == 1:
+            hostname, ip = found[0]
+            ip_entry.delete(0, tk.END)
+            ip_entry.insert(0, ip)
+            status_label.config(text=f"Found: {hostname} ({ip})", fg="green")
+            messagebox.showinfo("Scan Result", f"Found: {hostname}\nIP: {ip}\n(Auto-filled)")
+        else:
+            # Multiple found - naive Approach: pick first or list all
+            # For MVP: autofill first and show count
+            hostname, ip = found[0]
+            ip_entry.delete(0, tk.END)
+            ip_entry.insert(0, ip)
+            msg = "Found Receivers:\n" + "\n".join([f"{h} ({i})" for h, i in found])
+            messagebox.showinfo("Scan Result", msg)
+            status_label.config(text=f"Found {len(found)} - Selected {hostname}", fg="green")
+            
+    except Exception as e:
+        messagebox.showerror("Error", f"Scan failed: {e}")
+        status_label.config(text="Status: Error", fg="red")
+
+scan_btn = tk.Button(form_frame, text="Scan", command=scan_receivers)
+scan_btn.grid(row=0, column=2, padx=5)
 
 tk.Label(form_frame, text="Port:").grid(row=1, column=0, sticky="e", pady=5)
 port_entry = tk.Entry(form_frame)

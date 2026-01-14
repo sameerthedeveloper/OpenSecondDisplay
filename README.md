@@ -24,10 +24,10 @@ OpenSecondDisplay is a lightweight, open-source tool that uses **FFmpeg** and **
 4.  **Connect**: Enter the Receiver's IP and click **Start Stream**.
 
 ### 🐧 Linux (Receiver)
-1.  **Download**: Go to [Releases](https://github.com/sameerthedeveloper/OpenSecondDisplay/releases) and download `openseconddisplay-receiver_1.1.2_amd64.deb`.
+1.  **Download**: Go to [Releases](https://github.com/sameerthedeveloper/OpenSecondDisplay/releases) and download `openseconddisplay-receiver_1.1.3_amd64.deb`.
 2.  **Install**:
     ```bash
-    sudo dpkg -i openseconddisplay-receiver_1.1.2_amd64.deb
+    sudo dpkg -i openseconddisplay-receiver_1.1.3_amd64.deb
     sudo apt-get install -f  # Fix dependencies if needed
     ```
 3.  **Run**:
