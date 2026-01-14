@@ -60,14 +60,18 @@ jobs:
           # Prepare Debian Package Structure
           mkdir -p dist/openseconddisplay/DEBIAN
           mkdir -p dist/openseconddisplay/usr/local/bin
+          mkdir -p dist/openseconddisplay/usr/share/applications
           
           # Move binary to path
           mv dist/OpenSecondDisplay-Receiver-GUI dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
           chmod +x dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
           
+          # Copy desktop file
+          cp receiver/data/openseconddisplay-receiver.desktop dist/openseconddisplay/usr/share/applications/
+          
           # Create Control File
           echo "Package: openseconddisplay-receiver" > dist/openseconddisplay/DEBIAN/control
-          echo "Version: 1.1.0" >> dist/openseconddisplay/DEBIAN/control
+          echo "Version: 1.1.1" >> dist/openseconddisplay/DEBIAN/control
           echo "Section: utils" >> dist/openseconddisplay/DEBIAN/control
           echo "Priority: optional" >> dist/openseconddisplay/DEBIAN/control
           echo "Architecture: amd64" >> dist/openseconddisplay/DEBIAN/control
@@ -75,7 +79,7 @@ jobs:
           echo "Description: OpenSecondDisplay Receiver GUI for Linux" >> dist/openseconddisplay/DEBIAN/control
           
           # Build .deb
-          dpkg-deb --build dist/openseconddisplay dist/openseconddisplay-receiver_1.1.0_amd64.deb
+          dpkg-deb --build dist/openseconddisplay dist/openseconddisplay-receiver_1.1.1_amd64.deb
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

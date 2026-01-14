@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=OpenSecondDisplay Receiver
+Comment=Turn your Linux machine into a secondary display
+Exec=/usr/local/bin/openseconddisplay-receiver
+Icon=utilities-terminal
+Terminal=false
+Type=Application
+Categories=Utility;AudioVideo;
+Keywords=display;monitor;stream;
