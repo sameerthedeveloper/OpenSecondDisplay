@@ -26,17 +26,23 @@ jobs:
 
       - name: Build macOS Sender
         run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Sender-macOS --add-data "sender/config.py:." sender/sender.py
+          pyinstaller --onefile --name OpenSecondDisplay-Sender --add-data "sender/config.py:." sender/sender.py
+          mkdir -p dist/sender_dmg
+          mv dist/OpenSecondDisplay-Sender dist/sender_dmg/
+          hdiutil create -volname "OpenSecondDisplay Sender" -srcfolder dist/sender_dmg -ov -format UDZO dist/OpenSecondDisplay-Sender.dmg
 
       - name: Build macOS Receiver
         run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver-macOS --add-data "receiver/config.py:." receiver/receiver.py
+          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
+          mkdir -p dist/receiver_dmg
+          mv dist/OpenSecondDisplay-Receiver dist/receiver_dmg/
+          hdiutil create -volname "OpenSecondDisplay Receiver" -srcfolder dist/receiver_dmg -ov -format UDZO dist/OpenSecondDisplay-Receiver.dmg
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-builds
-          path: dist/*
+          path: dist/*.dmg
 
   build-linux:
     runs-on: ubuntu-latest
