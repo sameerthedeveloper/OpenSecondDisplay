@@ -60,14 +60,34 @@ jobs:
 
       - name: Build Linux Receiver
         run: |
-          # Note: sender is macOS only, we only build receiver for Linux
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver-Linux --add-data "receiver/config.py:." receiver/receiver.py
+          # Build binary
+          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
+          
+          # Prepare Debian Package Structure
+          mkdir -p dist/openseconddisplay/DEBIAN
+          mkdir -p dist/openseconddisplay/usr/local/bin
+          
+          # Move binary to path
+          mv dist/OpenSecondDisplay-Receiver dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
+          chmod +x dist/openseconddisplay/usr/local/bin/openseconddisplay-receiver
+          
+          # Create Control File
+          echo "Package: openseconddisplay-receiver" > dist/openseconddisplay/DEBIAN/control
+          echo "Version: 1.0.0" >> dist/openseconddisplay/DEBIAN/control
+          echo "Section: utils" >> dist/openseconddisplay/DEBIAN/control
+          echo "Priority: optional" >> dist/openseconddisplay/DEBIAN/control
+          echo "Architecture: amd64" >> dist/openseconddisplay/DEBIAN/control
+          echo "Maintainer: OpenSecondDisplay <maintainer@example.com>" >> dist/openseconddisplay/DEBIAN/control
+          echo "Description: OpenSecondDisplay Receiver for Linux" >> dist/openseconddisplay/DEBIAN/control
+          
+          # Build .deb
+          dpkg-deb --build dist/openseconddisplay dist/openseconddisplay-receiver_1.0.0_amd64.deb
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-builds
-          path: dist/*
+          path: dist/*.deb
 
   build-windows:
     runs-on: windows-latest
