@@ -26,11 +26,11 @@ jobs:
 
       - name: Build macOS Sender
         run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Sender --add-data "sender/config.py:." sender/sender.py
+          pyinstaller --onefile --name OpenSecondDisplay-Sender-macOS --add-data "sender/config.py:." sender/sender.py
 
       - name: Build macOS Receiver
         run: |
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
+          pyinstaller --onefile --name OpenSecondDisplay-Receiver-macOS --add-data "receiver/config.py:." receiver/receiver.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -55,7 +55,7 @@ jobs:
       - name: Build Linux Receiver
         run: |
           # Note: sender is macOS only, we only build receiver for Linux
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py:." receiver/receiver.py
+          pyinstaller --onefile --name OpenSecondDisplay-Receiver-Linux --add-data "receiver/config.py:." receiver/receiver.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -80,7 +80,7 @@ jobs:
       - name: Build Windows Receiver
         run: |
           # Use ; for path separator on Windows
-          pyinstaller --onefile --name OpenSecondDisplay-Receiver --add-data "receiver/config.py;." receiver/receiver.py
+          pyinstaller --onefile --name OpenSecondDisplay-Receiver-Windows --add-data "receiver/config.py;." receiver/receiver.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
